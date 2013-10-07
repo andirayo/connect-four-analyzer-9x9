@@ -1,0 +1,12 @@
+{
+  "name": "connect-four",
+  "version": "0.0.0",
+  "description": "Connect Four using only HTML/CSS/Javascript.",
+  "author": "David Dickson",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.6.3",
+    "grunt-mocha": "~0.4.1",
+    "grunt-html": "~0.3.3"
+  }
+}
