@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Connect Four</title>
+    <title>Connect Four Analyzer</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="connect-four.css" />
   </head>
   <body>
-    <h1>Connect Four</h1>
+    <h1>Rayo's Connect Four Analyzer <span id="headline_size">XX</span></h1>
+    Thanks, David for your JS base! :)
     <div id="board">
     </div>
     <div id="instruction">
-      <span id="player1"><span class="red">Player one</span>, select column.</span>
-      <span id="player2" class="hidden"><span class="yellow">Player two</span>, select column.</span>
+      <span id="player1"><span class="yellow">Player one</span>, select column.</span>
+      <span id="player2" class="hidden"><span class="red">Player two</span>, select column.</span>
       <span id="winner" class="hidden"><span id="winnerName"></span>...congratulations you won connect four.</span>
       <div>
         <button id="newGame" class="hidden">New Game</button>
       </div>
     </div>
     <script type="text/javascript" src="jquery-2.0.3.js"></script>
+    <script type="text/javascript" src="c4-config.js"></script>
     <script type="text/javascript" src="connect-four.js"></script>
     <script type="text/javascript">
       (function ($, window, document) {
 
         $(function () {
           var board = $('#board');
-          connectFour.util.init(board);
+          connectFour.util.init( board );
         });
 
       }(window.jQuery, window, document));
