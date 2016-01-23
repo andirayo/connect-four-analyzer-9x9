@@ -7,7 +7,7 @@ html {
 #board{
     width: 420px;
     height: 360px;
-    background-color: blue;
+    background-color: grey;
     margin-left: auto;
     margin-right: auto;
     position: relative;
@@ -18,17 +18,50 @@ html {
     display: none;
 }
 
-.emptyDisc {
+.emptyDiscOld {
     -webkit-border-radius: 25px;
     -moz-border-radius: 25px;
     border-radius: 25px;
     width: 50px;
     height: 50px;
-    background: darkgrey;
+    background: blue;
     position: absolute;
 }
-
+.emptyDisc {
+    width: 60px;
+    height: 60px;
+    background-image: url('board_piece.png');
+    position: absolute;
+    z-index: 2;
+}
 .yellowDisc {
+    width: 60px;
+    height: 60px;
+    background-image: url('disc-yellow.png');
+    position: absolute;
+    -moz-transition: all 200ms;
+    -webkit-transition: all 200ms;
+    -ms-transition: all 200ms;
+    -o-transition: all 200ms;
+    transition: all 200ms;
+    z-index: 1;
+}
+.redDisc {
+    width: 60px;
+    height: 60px;
+    background-image: url('disc-red.png');
+    position: absolute;
+    -moz-transition: all 200ms;
+    -webkit-transition: all 200ms;
+    -ms-transition: all 200ms;
+    -o-transition: all 200ms;
+    transition: all 200ms;
+    z-index: 1;
+}
+
+
+
+.yellowDiscOld {
     -webkit-border-radius: 25px;
     -moz-border-radius: 25px;
     border-radius: 25px;
@@ -36,14 +69,14 @@ html {
     height: 50px;
     background: yellow;
     position: absolute;
-    -moz-transition: all 1s;
-    -webkit-transition: all 1s;
-    -ms-transition: all 1s;
-    -o-transition: all 1s;
-    transition: all 1s;
+    -moz-transition: all 200ms;
+    -webkit-transition: all 200ms;
+    -ms-transition: all 200ms;
+    -o-transition: all 200ms;
+    transition: all 200ms;
 }
 
-.redDisc {
+.redDiscOld {
     -webkit-border-radius: 25px;
     -moz-border-radius: 25px;
     border-radius: 25px;
@@ -51,11 +84,11 @@ html {
     height: 50px;
     background: red;
     position: absolute;
-    -moz-transition: all 1s;
-    -webkit-transition: all 1s;
-    -ms-transition: all 1s;
-    -o-transition: all 1s;
-    transition: all 1s;
+    -moz-transition: all 200ms;
+    -webkit-transition: all 200ms;
+    -ms-transition: all 200ms;
+    -o-transition: all 200ms;
+    transition: all 200ms;
 }
 
 #instruction{
