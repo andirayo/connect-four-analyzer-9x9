@@ -7,27 +7,53 @@
     <link rel="stylesheet" href="connect-four.css" />
   </head>
   <body>
-    <h1>Rayo's Connect Four Analyzer <span id="headline_size">XX</span></h1>
-    Thanks, David for your JS base! :)
-    <div id="board">
+    <h1>Rayo's Connect Four Analyzer <span id="headline_size">XxX</span></h1>
+    <div>
+      Thanks, David for your JS base! :)
+      <button id="buttonBoardsize76">7x6</button>
+      <button id="buttonBoardsize88">8x8</button>
+      <button id="buttonBoardsize99">9x9</button>
     </div>
-    <div id="instruction">
-      <span id="player1"><span class="yellow">Player one</span>, select column.</span>
-      <span id="player2" class="hidden"><span class="red">Player two</span>, select column.</span>
-      <span id="winner" class="hidden"><span id="winnerName"></span>...congratulations you won connect four.</span>
-      <div>
-        <button id="newGame" class="hidden">New Game</button>
+
+    <div id="analyzer">
+      <div class="boardAreas">
+        <div class="boardArea"></div>
+        <div class="boardArea"></div>
+        <div class="boardArea"></div>
+        <div class="boardArea"></div>
+        <div class="boardArea"></div>
+        <div class="boardArea"></div>
+        <div class="boardArea"></div>
+        <div class="boardArea"></div>
+        <br style="clear:left;" />
+      </div>
+      <div id="instruction">
+        <span id="player1"><span class="yellow">Player one</span>, select column.</span>
+        <span id="player2" class="hidden"><span class="red">Player two</span>, select column.</span>
+        <span id="winner" class="hidden"><span id="winnerName"></span>...congratulations you won connect four.</span>
+        <div>
+          <button class="buttonRestart">Restart</button>
+          <button class="buttonBack">&lt;&lt; Back</button>
+          <button class="buttonForth">Forth &gt;&gt;</button>
+        </div>
       </div>
     </div>
+
     <script type="text/javascript" src="jquery-2.0.3.js"></script>
     <script type="text/javascript" src="c4-config.js"></script>
     <script type="text/javascript" src="connect-four.js"></script>
     <script type="text/javascript">
       (function ($, window, document) {
-
         $(function () {
-          var board = $('#board');
-          connectFour.util.init( board );
+          var getParams = {},
+            tmp = [];
+          window.location.search.substr(1).split("&")
+            .forEach(function (item) {
+              tmp = item.split("=");
+              getParams[ tmp[0] ] = tmp[1];
+            });
+
+          c4.util.init( getParams );
         });
 
       }(window.jQuery, window, document));
