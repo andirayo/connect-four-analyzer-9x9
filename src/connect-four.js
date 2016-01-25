@@ -343,7 +343,7 @@ c4.util = (function ($, window, document) {
         moveListString  = moveListString.replace('Speel', 'k9');
         moveListString  = moveListString.replace('Zieh', 'k9');
 
-        // BSN
+        // Brettspielnetz  move list
         // Example:
         //  5. 	d4 	d5 	 6. 	e4 	c2 3. 	e2 	a1 	 4. 	d3 	e3  1. 	d1 	d2 	 2. 	c1 	e1
         console.log(moveListString);
@@ -368,7 +368,7 @@ c4.util = (function ($, window, document) {
           return moveListSorted.split('').map(function(str) {return str.charCodeAt(0) - 96;});
         }
         
-        // YourTurnMyTurn / JijBent
+        // YourTurnMyTurn / JijBent move list
         // Example:
         // 1. d1 d2 2. e1 f1 3. e2 e3 4. e4 c1 5. d3 d4 6. d5 f2 7. g1 c2 8. c3 g2 9. e5 d6 10. e6 e7
         if (/\d+\.\s([a-k])[1-9]0?\s([a-k])[1-9]0?\s+/.test(moveListString)) {
