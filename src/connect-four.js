@@ -320,7 +320,7 @@ c4.util = (function ($, window, document) {
 
         boardAreas.each(function (index, boardArea) {
           externalMoveList.forEach(function (column) {
-            boardArea.game.playerSelectsColumn(parseInt(column));
+            boardArea.game.playerSelectsColumn( column - 1 );
           })
         });
       },
@@ -337,8 +337,20 @@ c4.util = (function ($, window, document) {
       },
 
       parseMoveList = function( moveListString ) {
+        // YourTurnMyTurn / JijBent
+        // Example:
+        // 1. d1 d2 2. e1 f1 3. e2 e3 4. e4 c1 5. d3 d4 6. d5 f2 7. g1 c2 8. c3 g2 9. e5 d6 10. e6 e7
+        console.log(moveListString);
+        if (/\d+\.\s([a-j])[1-9]\s([a-j])[1-9]\s+/.test(moveListString)) {
+          moveListString = moveListString.replace(/(?:\d+\.)?\s?([a-j])[1-9]\s([a-j])[1-9]\s*/g, '$1$2');
+          console.log(moveListString);
+          console.log(moveListString.split('').map(function(str) {return str.charCodeAt(0) - 96;}));
+          return moveListString.split('').map(function(str) {return str.charCodeAt(0) - 96;});
+        }
         // LittleGolem move list
-        if (/\s/.test(moveListString)) {
+        // Example:
+        // 1.5 2.5 3.5 4.5 5.5 6.5 7.6 8.7 9.3
+        if (/\d+\.(\d+)\s*/.test(moveListString)) {
           moveListString = moveListString.replace(/\d+\.(\d+)\s*/g, '$1')
         }
         return moveListString.split('').map(function(str) {return parseInt(str);});
@@ -350,7 +362,7 @@ c4.util = (function ($, window, document) {
         } );
 
         if (getParams['moves']) {
-          externalMoveList = parseMoveList(decodeURIComponent(getParams['moves']));
+          externalMoveList = parseMoveList(decodeURIComponent(getParams['moves'].trim()));
         }
 
         changeBoardSize( CONFIG.BOARDSIZE_WIDTH, CONFIG.BOARDSIZE_HEIGHT );
