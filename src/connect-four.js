@@ -269,6 +269,7 @@ c4.util = (function ($, window, document) {
       buttonBoardsize76   = $('#buttonBoardsize76'),
       buttonBoardsize88   = $('#buttonBoardsize88'),
       buttonBoardsize99   = $('#buttonBoardsize99'),
+      buttonBoardsizeAA   = $('#buttonBoardsizeAA'),
 
       boardAreas          = $('.boardArea'),
 
@@ -337,23 +338,55 @@ c4.util = (function ($, window, document) {
       },
 
       parseMoveList = function( moveListString ) {
+        // Removing JijBent, BSN, YTMT specific naming conventions
+        moveListString  = moveListString.replace('Play', 'k9');
+        moveListString  = moveListString.replace('Speel', 'k9');
+        moveListString  = moveListString.replace('Zieh', 'k9');
+
+        // BSN
+        // Example:
+        //  5. 	d4 	d5 	 6. 	e4 	c2 3. 	e2 	a1 	 4. 	d3 	e3  1. 	d1 	d2 	 2. 	c1 	e1
+        console.log(moveListString);
+        if (/^(?!1\.)\d+\.\s([a-k])[1-9]0?\s([a-k])[1-9]0?\s+/.test(moveListString)) {
+          // parse cells
+          moveListString = moveListString.replace(/(?:\d+\.)?\s?([a-k])[1-9]0?\s([a-k])[1-9]0?\s*/g, '$1$2');
+          console.log(moveListString);
+          // remove noise
+          moveListString = moveListString.replace( /[^a-j]/g, '' );
+          console.log(moveListString);
+          // sort (BSN has weird sorting)
+          moveListSorted = '';
+          while (4 < moveListString.length) {
+            moveListSorted += moveListString.substring( moveListString.length-4 );
+            moveListString  = moveListString.substring( 0, moveListString.length-4 )
+          }
+          moveListSorted  += moveListString;
+          console.log(moveListSorted);
+          console.log(moveListSorted.split('').map(function(str) {return str.charCodeAt(0) - 96;}));
+
+          // identify column numbers
+          return moveListSorted.split('').map(function(str) {return str.charCodeAt(0) - 96;});
+        }
         // YourTurnMyTurn / JijBent
         // Example:
         // 1. d1 d2 2. e1 f1 3. e2 e3 4. e4 c1 5. d3 d4 6. d5 f2 7. g1 c2 8. c3 g2 9. e5 d6 10. e6 e7
-        console.log(moveListString);
-        if (/\d+\.\s([a-j])[1-9]\s([a-j])[1-9]\s+/.test(moveListString)) {
-          moveListString = moveListString.replace(/(?:\d+\.)?\s?([a-j])[1-9]\s([a-j])[1-9]\s*/g, '$1$2');
-          console.log(moveListString);
-          console.log(moveListString.split('').map(function(str) {return str.charCodeAt(0) - 96;}));
+        if (/\d+\.\s([a-k])[1-9]0?\s([a-k])[1-9]0?\s+/.test(moveListString)) {
+          // parse cells
+          moveListString = moveListString.replace(/(?:\d+\.)?\s?([a-k])[1-9]0?\s([a-k])[1-9]0?\s*/g, '$1$2');
+          // remove noise
+          moveListString = moveListString.replace( /[^a-j]/g, '' );
+          // identify column numbers
           return moveListString.split('').map(function(str) {return str.charCodeAt(0) - 96;});
         }
         // LittleGolem move list
         // Example:
         // 1.5 2.5 3.5 4.5 5.5 6.5 7.6 8.7 9.3
         if (/\d+\.(\d+)\s*/.test(moveListString)) {
-          moveListString = moveListString.replace(/\d+\.(\d+)\s*/g, '$1')
+          // parse columns
+          moveListString = moveListString.replace(/\d+\.(\d+)\s*/g, '$1 ')
         }
-        return moveListString.split('').map(function(str) {return parseInt(str);});
+
+        return moveListString.trim().split(' ').map(function(str) {return parseInt(str);});
       },
 
       init = function (getParams) {
@@ -422,6 +455,9 @@ c4.util = (function ($, window, document) {
         });
         buttonBoardsize99.on('click', function () {
           changeBoardSize(9, 9);
+        });
+        buttonBoardsizeAA.on('click', function () {
+          changeBoardSize(10, 10);
         });
       };
 
