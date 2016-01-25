@@ -346,14 +346,11 @@ c4.util = (function ($, window, document) {
         // Brettspielnetz  move list
         // Example:
         //  5. 	d4 	d5 	 6. 	e4 	c2 3. 	e2 	a1 	 4. 	d3 	e3  1. 	d1 	d2 	 2. 	c1 	e1
-        console.log(moveListString);
         if (/^(?!1\.)\d+\.\s([a-k])[1-9]0?\s([a-k])[1-9]0?\s+/.test(moveListString)) {
           // parse cells
           moveListString = moveListString.replace(/(?:\d+\.)?\s?([a-k])[1-9]0?\s([a-k])[1-9]0?\s*/g, '$1$2');
-          console.log(moveListString);
           // remove noise
           moveListString = moveListString.replace( /[^a-j]/g, '' );
-          console.log(moveListString);
           // sort (BSN has weird sorting)
           moveListSorted = '';
           while (4 < moveListString.length) {
@@ -361,8 +358,6 @@ c4.util = (function ($, window, document) {
             moveListString  = moveListString.substring( 0, moveListString.length-4 )
           }
           moveListSorted  += moveListString;
-          console.log(moveListSorted);
-          console.log(moveListSorted.split('').map(function(str) {return str.charCodeAt(0) - 96;}));
 
           // identify column numbers
           return moveListSorted.split('').map(function(str) {return str.charCodeAt(0) - 96;});
@@ -402,6 +397,21 @@ c4.util = (function ($, window, document) {
 
         if (getParams['moves']) {
           externalMoveList = parseMoveList(decodeURIComponent(getParams['moves'].trim()));
+
+          if ( getParams['moves'] != externalMoveList.join('')
+            && (! getParams['r']  ||  ! parseInt(getParams['r']))
+             ) {
+            newUrl  = window.location.href;
+            // remove redirect parameter
+            newUrl  = newUrl.replace( /([?&])r=.*?(&|$)/, '$1' );
+            // shorten move-list to readable length
+            newUrl  = newUrl.replace( getParams['moves'], externalMoveList.join('') );
+            // add redirect parameter
+            newUrl  = newUrl.replace( /([?&])moves=/, '$1r=1&moves=' );
+            // redirect the user
+            console.log( 'Redirecting to ' + newUrl );
+            window.location.href  = newUrl;
+          }
         }
 
         changeBoardSize( CONFIG.BOARDSIZE_WIDTH, CONFIG.BOARDSIZE_HEIGHT );
