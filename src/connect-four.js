@@ -367,6 +367,7 @@ c4.util = (function ($, window, document) {
           // identify column numbers
           return moveListSorted.split('').map(function(str) {return str.charCodeAt(0) - 96;});
         }
+        
         // YourTurnMyTurn / JijBent
         // Example:
         // 1. d1 d2 2. e1 f1 3. e2 e3 4. e4 c1 5. d3 d4 6. d5 f2 7. g1 c2 8. c3 g2 9. e5 d6 10. e6 e7
@@ -378,15 +379,20 @@ c4.util = (function ($, window, document) {
           // identify column numbers
           return moveListString.split('').map(function(str) {return str.charCodeAt(0) - 96;});
         }
+
         // LittleGolem move list
         // Example:
         // 1.5 2.5 3.5 4.5 5.5 6.5 7.6 8.7 9.3
         if (/\d+\.(\d+)\s*/.test(moveListString)) {
           // parse columns
           moveListString = moveListString.replace(/\d+\.(\d+)\s*/g, '$1 ')
+          return moveListString.trim().split(' ').map(function(str) {return parseInt(str);});
         }
 
-        return moveListString.trim().split(' ').map(function(str) {return parseInt(str);});
+        // Manual input
+        // Example:
+        // 444445251333313
+        return moveListString.trim().split('').map(function(str) {return parseInt(str);});
       },
 
       init = function (getParams) {
