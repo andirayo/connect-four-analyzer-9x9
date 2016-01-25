@@ -26,7 +26,7 @@ var C4Game = function( newBoardArea ) {
 
         gameCells = [];
         while (c4.boardsizeWidth > gameCells.length) {
-          gameCells.push([]);
+          gameCells.push( [] );
         }
         winner = false;
       },
@@ -39,7 +39,7 @@ var C4Game = function( newBoardArea ) {
       },
 
       discDroppable = function (column) {
-        if (column === undefined  ||  winner) {
+        if (winner  ||  column === undefined  ||  ! Number.isInteger(column)) {
           return false;
         }
         if (0 > column  ||  column >= c4.boardsizeWidth  ||  gameCells[column].length >= c4.boardsizeHeight) {
@@ -349,13 +349,16 @@ c4.util = (function ($, window, document) {
 
         changeBoardSize( CONFIG.BOARDSIZE_WIDTH, CONFIG.BOARDSIZE_HEIGHT );
 
-        moveList = parseMoveList( decodeURIComponent(getParams['moves']) );
+        if (getParams['moves']) {
+          moveList = parseMoveList(decodeURIComponent(getParams['moves']));
+          console.log(moveList);
 
-        boardAreas.each( function(index, boardArea) {
-          moveList.forEach( function(column) {
-            boardArea.game.playerSelectsColumn( parseInt(column) );
-          })
-        } );
+          boardAreas.each(function (index, boardArea) {
+            moveList.forEach(function (column) {
+              boardArea.game.playerSelectsColumn(parseInt(column));
+            })
+          });
+        }
 
         $(document).keydown(function(e){
           if (! lastBoardPlayed) { return; }
