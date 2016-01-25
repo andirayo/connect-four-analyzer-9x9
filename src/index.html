@@ -32,9 +32,9 @@
         <span id="player2" class="hidden"><span class="red">Player two</span>, select column.</span>
         <span id="winner" class="hidden"><span id="winnerName"></span>...congratulations you won connect four.</span>
         <div>
-          <button class="buttonRestart">Restart</button>
-          <button class="buttonBack">&lt;&lt; Back</button>
-          <button class="buttonForth">Forth &gt;&gt;</button>
+          <button id="buttonRestart">Restart</button>
+          <button id="buttonBack">&lt;&lt; Back</button>
+          <button id="buttonForth">Forth &gt;&gt;</button>
         </div>
       </div>
     </div>
@@ -54,6 +54,12 @@
             });
 
           c4.util.init( getParams );
+        });
+
+        $(document).on("keydown", function (e) {
+          if (e.which === 8  &&  !$(e.target).is("input, textarea")) {
+            e.preventDefault();
+          }
         });
 
       }(window.jQuery, window, document));
