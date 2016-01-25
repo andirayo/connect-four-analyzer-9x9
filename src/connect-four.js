@@ -2,60 +2,62 @@ var CONFIG = {
   BOARDSIZE_WIDTH:  9,
   BOARDSIZE_HEIGHT: 9,
   CELL_SIZE:        30,
-  PLAYER1:          'yellow',
-  PLAYER2:          'red',
+
+  PLAYER_COLORS: {
+    1: 'yellow',
+    2: 'red',
+  },
+  PLAYER_CLASSES: {
+    1: 'yellowDisc',
+    2: 'redDisc',
+  },
 };
 
 var c4 = { boardsizeWidth: CONFIG.BOARDSIZE_WIDTH, boardsizeHeight: CONFIG.BOARDSIZE_HEIGHT };
 
-c4.game = (function() {
-  'use strict';
+var C4Game = function( newBoardArea ) {
+  var boardArea, gameCells, winner,
+      // go back, go forward
+      listOfDiscs         = [],
+      possibleNextDiscs   = [],
 
-  var board = [],
-      winner = false,
-      player = CONFIG.PLAYER1,
+      reset = function() {
+        while (removeLastDisc()) {}
 
-      removeWinner = function(){
+        gameCells = [];
+        while (c4.boardsizeWidth > gameCells.length) {
+          gameCells.push([]);
+        }
         winner = false;
       },
 
-      clearBoard = function(){
-
-        board.length = 0;
-        winner = false;
-        player = CONFIG.PLAYER1;
-        while(board.push([]) < c4.boardsizeWidth){
-        }
+      nextPlayer = function() {
+        return gameCells.map(function(e){return e.length;}).reduce(function(m,e){return m+e;})  %  2  +  1;
+      },
+      lastPlayer = function() {
+        return (1 + gameCells.map(function(e){return e.length;}).reduce(function(m,e){return m+e;}))  %  2  +  1;
       },
 
-      dropDisc = function (column, color) {
-
-        if(column === undefined || color === undefined || winner){
+      discDroppable = function (column) {
+        if (column === undefined  ||  winner) {
           return false;
         }
-
-        if(board.length === 0){
-          clearBoard();
-        }
-
-        if(column >= c4.boardsizeWidth || column < 0 || board[column].length >= c4.boardsizeHeight){
+        if (0 > column  ||  column >= c4.boardsizeWidth  ||  gameCells[column].length >= c4.boardsizeHeight) {
           return false;
         }
-
-        board[column].push(color);
 
         return true;
       },
 
-      winningMove = function (column, color) {
-
-        if(column === undefined || color === undefined){
+      checkWinner = function (column) {
+        if(column === undefined){
           return false;
         }
+        var color = gameCells[column][gameCells[column].length - 1];
 
         /* check vertically */
-        var numberDiscs = board[column].length,
-            fourInColumn = board[column].slice(numberDiscs - 4, numberDiscs),
+        var numberDiscs = gameCells[column].length,
+            fourInColumn = gameCells[column].slice(numberDiscs - 4, numberDiscs),
             i, j;
 
         for (i = 0; i < 4; i++) {
@@ -69,16 +71,16 @@ c4.game = (function() {
         }
 
         /* check horizontal */
-        var row = board[column].length - 1,
+        var row = gameCells[column].length - 1,
             horizontal, diagnalRight, diagnalLeft;
         horizontal = diagnalRight = diagnalLeft = 1;
 
         for (i = column - 1; i >= 0; i--) {
 
-          if(board[i][row] !== color) {
+          if(gameCells[i][row] !== color) {
             break;
           }
-          if(board[i][row] === color){
+          if(gameCells[i][row] === color){
             horizontal++;
           }
           if(horizontal >= 4){
@@ -88,10 +90,10 @@ c4.game = (function() {
         }
 
         for (i = column + 1; i < c4.boardsizeWidth; i++) {
-          if(board[i][row] !== color){
+          if(gameCells[i][row] !== color){
             break;
           }
-          if(board[i][row] === color){
+          if(gameCells[i][row] === color){
             horizontal++;
           }
           if(horizontal >= 4){
@@ -102,10 +104,10 @@ c4.game = (function() {
 
         /* check diagnal right */
         for (i = column + 1, j = numberDiscs; i < c4.boardsizeWidth && j < c4.boardsizeHeight; i++) {
-          if(board[i][j] !== color){
+          if(gameCells[i][j] !== color){
             break;
           }
-          if(board[i][j] === color){
+          if(gameCells[i][j] === color){
             diagnalRight ++;
           }
           if(diagnalRight >= 4){
@@ -116,10 +118,10 @@ c4.game = (function() {
         }
 
         for (i = column - 1, j = numberDiscs - 2; i >= 0 && j >= 0; i--) {
-          if(board[i][j] !== color){
+          if(gameCells[i][j] !== color){
             break;
           }
-          if(board[i][j] === color){
+          if(gameCells[i][j] === color){
             diagnalRight ++;
           }
           if(diagnalRight >= 4){
@@ -131,10 +133,10 @@ c4.game = (function() {
 
         /* check diagnal left */
         for (i = column - 1, j = numberDiscs; i >= 0 && j < c4.boardsizeHeight; i--) {
-          if(board[i][j] !== color){
+          if(gameCells[i][j] !== color){
             break;
           }
-          if(board[i][j] === color){
+          if(gameCells[i][j] === color){
             diagnalLeft ++;
           }
           if(diagnalLeft >= 4){
@@ -145,10 +147,10 @@ c4.game = (function() {
         }
 
         for (i = column + 1, j = numberDiscs - 2; i < c4.boardsizeWidth && j >= 0; i++) {
-          if(board[i][j] !== color){
+          if(gameCells[i][j] !== color){
             break;
           }
-          if(board[i][j] === color){
+          if(gameCells[i][j] === color){
             diagnalLeft ++;
           }
           if(diagnalLeft >= 4){
@@ -159,44 +161,117 @@ c4.game = (function() {
         }
 
         return false;
-
       },
 
-      togglePlayer = function () {
 
-        this.player = this.player === CONFIG.PLAYER1 ? CONFIG.PLAYER2 : CONFIG.PLAYER1;
+      // #####################################################################################
+      // ### HTML methods ####################################################################
+      // #####################################################################################
+      board = function() {
+        return boardArea.firstChild;
       },
 
-      fullBoard = function () {
+      addDisc = function (left, bottom, selectedColumn) {
+        var disc = document.createElement("div");
+        listOfDiscs.push( [disc, selectedColumn] );
 
-        for (var i = 0; i < board.length; i++) {
-          if(board[i].length !== c4.boardsizeHeight){
-            return false;
-          }
+        var bottomLocation = (10 + CONFIG.CELL_SIZE * c4.boardsizeHeight);
+        $(disc).css({left: left, bottom: bottomLocation, width: CONFIG.CELL_SIZE, height: CONFIG.CELL_SIZE, 'background-size': CONFIG.CELL_SIZE});
+        board().appendChild( disc );
+
+        disc.setAttribute( "class", CONFIG.PLAYER_CLASSES[nextPlayer()] );
+        disc.setAttribute( "data-column", selectedColumn );
+
+        /* called to allow CSS3 transitions for dynamically created dom element. */
+        /*jshint -W030 */
+        window.getComputedStyle(disc).bottom;
+        disc.style.bottom = bottom + "px";
+      },
+
+      removeLastDisc = function () {
+        var last    = listOfDiscs.pop();
+
+        if (null == last) {
+          return false;
         }
+
+        var disc    = last[0];
+        var column  = last[1];
+
+        possibleNextDiscs.push( column );
+
+        board().removeChild( disc );
+        disc.remove();
+
+        gameCells[column].pop();
+        winner = false;
+
         return true;
+      },
+
+      addNextDisc = function () {
+        column  = possibleNextDiscs.pop();
+        tryingToDropDisc( column );
+      },
+
+      discDestination = function( selectedColumn ){
+        if (c4.boardsizeWidth <= selectedColumn) {
+          return null;
+        }
+        if (0 > selectedColumn) {
+          return null;
+        }
+        if (! discDroppable(selectedColumn)) {
+          return null;
+        }
+
+        return {
+          selectedColumn: selectedColumn,
+          left: selectedColumn * CONFIG.CELL_SIZE,
+          bottom: gameCells[selectedColumn].length * CONFIG.CELL_SIZE
+        };
+      },
+
+      tryingToDropDisc = function( selectedColumn ) {
+        destination = discDestination( selectedColumn );
+
+        if (null == destination) {
+          return null;
+        }
+
+        addDisc(destination.left, destination.bottom, destination.selectedColumn);
+        gameCells[selectedColumn].push( CONFIG.PLAYER_COLORS[nextPlayer()] );
+
+        if (checkWinner(destination.selectedColumn)){
+          winner = lastPlayer();
+        }
+      },
+      
+      playerSelectsColumn = function( selectedColumn ) {
+        if (discDestination( selectedColumn )) {
+          possibleNextDiscs = [];
+        }
+
+        tryingToDropDisc( selectedColumn );
       };
 
 
-  return {
-    clearBoard: clearBoard,
-    dropDisc: dropDisc,
-    winningMove: winningMove,
-    togglePlayer: togglePlayer,
-    fullBoard: fullBoard,
-    player: player,
-    board: board,
-    winner: winner,
-    removeWinner: removeWinner
-  };
+  // initial setup:
+  boardArea  = newBoardArea;
+  reset();
 
-}) ();
+  return {
+    reset: reset,
+    playerSelectsColumn: playerSelectsColumn,
+    removeLastDisc: removeLastDisc,
+    addNextDisc: addNextDisc,
+  }
+};
+
+
 
 c4.util = (function ($, window, document) {
-
-  var i, j, board,
-
-      buttonRestart       = $('#buttonRestart'),
+  var buttonRestart       = $('#buttonRestart'),
       buttonBack          = $('#buttonBack'),
       buttonForth         = $('#buttonForth'),
       buttonBoardsize76   = $('#buttonBoardsize76'),
@@ -205,13 +280,10 @@ c4.util = (function ($, window, document) {
 
       boardAreas          = $('.boardArea'),
 
-      listOfDiscs         = [],
+      lastBoardPlayed,
 
-      winner = $('#winner'),
-      winnerName = $('#winnerName'),
-      player1 = $('#player1'),
-      player2 = $('#player2'),
 
+      // clean up everything
       resetBoardAreas = function() {
         boardAreas.each( function(index, boardArea) {
           while (boardArea.firstChild) {
@@ -221,15 +293,16 @@ c4.util = (function ($, window, document) {
         })
       },
 
+      // clean up everything and create fresh HTML boards
       initializeBoards = function() {
         resetBoardAreas();
 
-        board = $('<div>', {class: "board"});
+        var board = $('<div>', {class: "board"});
         board.css({width: CONFIG.CELL_SIZE * c4.boardsizeWidth, height: CONFIG.CELL_SIZE * c4.boardsizeHeight});
 
         var discs = [];
-        for (i = 0; i < c4.boardsizeWidth; i++) {
-          for (j = 0; j < c4.boardsizeHeight; j++) {
+        for (var i = 0; i < c4.boardsizeWidth; i++) {
+          for (var j = 0; j < c4.boardsizeHeight; j++) {
             var disc = $('<div>', {class: "boardPiece", "data-column": i});
             var left = i * CONFIG.CELL_SIZE;
             var bottom = j * CONFIG.CELL_SIZE;
@@ -240,72 +313,14 @@ c4.util = (function ($, window, document) {
 
         board.append(discs);
         boardAreas.append( board );
-
-        c4.game.clearBoard();
       },
 
-      addDisc = function (left, bottom, selectedColumn) {
+      changeBoardSize = function( boardsize_width, boardsize_height ) {
+        c4.boardsizeWidth = boardsize_width;
+        c4.boardsizeHeight = boardsize_height;
+        $('#headline_size').text( c4.boardsizeWidth + 'x' + c4.boardsizeHeight);
 
-        var disc = document.createElement("div");
-        listOfDiscs.push( [disc, selectedColumn] );
-
-        var bottomLocation = (10 + CONFIG.CELL_SIZE * c4.boardsizeHeight);
-        $(disc).css({left: left, bottom: bottomLocation, width: CONFIG.CELL_SIZE, height: CONFIG.CELL_SIZE, 'background-size': CONFIG.CELL_SIZE});
-        board.get(0).appendChild(disc);
-
-        disc.setAttribute("class", c4.game.player=== CONFIG.PLAYER1 ? "yellowDisc" : "redDisc");
-        disc.setAttribute("data-column", selectedColumn);
-
-        /* called to allow CSS3 transitions for dynamically created dom element. */
-        /*jshint -W030 */
-        window.getComputedStyle(disc).bottom;
-        disc.style.bottom = bottom + "px";
-
-      },
-      removeLastDisc = function () {
-        var last    = listOfDiscs.pop();
-        var disc    = last[0];
-        var column  = last[1];
-
-        c4.game.board[column].pop();
-        //disc.outerHTML = '';
-        board.get(0).removeChild(disc);
-        c4.game.removeWinner();
-        togglePlayer();
-      },
-
-
-      showNewGame = function () {
-
-        player1.addClass('hidden');
-        player2.addClass('hidden');
-        newGameButton.removeClass('hidden');
-      },
-
-      togglePlayer = function () {
-
-        c4.game.togglePlayer();
-        player1.toggleClass('hidden');
-        player2.toggleClass('hidden');
-      },
-
-      announceWinner = function () {
-
-        winnerName.text(c4.game.player === CONFIG.PLAYER1 ? "Player one" : "Player two");
-        winnerName.addClass(c4.game.player);
-        winner.removeClass('hidden');
-        showNewGame();
-      },
-
-      newGame = function () {
-
-        c4.game.clearBoard();
-        $('.yellowDisc').remove();
-        $('.redDisc').remove();
-        winner.addClass('hidden');
-        newGameButton.addClass('hidden');
-        player1.removeClass('hidden');
-        player2.addClass('hidden');
+        initializeBoards();
       },
 
       selectedColumnMouse = function(e) {
@@ -319,109 +334,77 @@ c4.util = (function ($, window, document) {
         return selectedColumn;
       },
 
-      discDestination = function(selectedColumn){
-        if (c4.boardsizeWidth <= selectedColumn) {
-          return null;
+      parseMoveList = function( moveListString ) {
+        // LittleGolem move list
+        if (/\s/.test(moveListString)) {
+          moveListString = moveListString.replace(/\d+\.(\d+)\s*/g, '$1')
         }
-        if (0 > selectedColumn) {
-          return null;
-        }
-
-        return {
-          selectedColumn: selectedColumn,
-          left: selectedColumn * CONFIG.CELL_SIZE,
-          bottom: c4.game.board[selectedColumn].length * CONFIG.CELL_SIZE
-        };
-      },
-
-      tryingToDropDisc = function (selectedColumn) {
-
-        destination = discDestination(selectedColumn);
-
-        if (null == destination) {
-          return null;
-        }
-
-        if(c4.game.dropDisc(destination.selectedColumn, c4.game.player)) {
-          addDisc(destination.left, destination.bottom, destination.selectedColumn);
-          if(c4.game.winningMove(destination.selectedColumn, c4.game.player)){
-            announceWinner();
-            //return;
-          }
-          togglePlayer();
-        }
-      },
-
-      changeBoardSize = function( boardsize_width, boardsize_height ) {
-        c4.boardsizeWidth = boardsize_width;
-        c4.boardsizeHeight = boardsize_height;
-        $('#headline_size').text( c4.boardsizeWidth + 'x' + c4.boardsizeHeight);
-
-        initializeBoards();
+        return moveListString.split('').map(function(str) {return parseInt(str);});
       },
 
       init = function (getParams) {
+        boardAreas.each( function(index, boardArea) {
+          boardArea.game  = new C4Game( boardArea );
+        } );
+
         changeBoardSize( CONFIG.BOARDSIZE_WIDTH, CONFIG.BOARDSIZE_HEIGHT );
 
-        $(document).keyup(function(e){
+        moveList = parseMoveList( decodeURIComponent(getParams['moves']) );
+
+        boardAreas.each( function(index, boardArea) {
+          moveList.forEach( function(column) {
+            boardArea.game.playerSelectsColumn( parseInt(column) );
+          })
+        } );
+
+        $(document).keydown(function(e){
+          if (! lastBoardPlayed) { return; }
+
           // backspace
           if (8 == e.which) {
-            removeLastDisc();
+            lastBoardPlayed.game.removeLastDisc();
           }
           // left
           if (37 == e.which) {
-            removeLastDisc();
+            lastBoardPlayed.game.removeLastDisc();
           }
           //right
           if (39 == e.which) {
-
+            lastBoardPlayed.game.addNextDisc();
           }
         });
 
         $(document).keypress(function(e){
-          if(c4.game.winner) {
-            return;
-          }
+          if (! lastBoardPlayed) { return; }
 
           if (48 == e.which) {
-            tryingToDropDisc( 9 );
+            lastBoardPlayed.game.playerSelectsColumn( 9 );
           }
           if (45 == e.which) {
-            tryingToDropDisc( 10 );
+            lastBoardPlayed.game.playerSelectsColumn( 10 );
           }
           if (49 <= e.which  && e.which <= 57) {
-            tryingToDropDisc( e.which - 49 );
+            lastBoardPlayed.game.playerSelectsColumn( e.which - 49 );
           }
         });
 
         boardAreas.on('click', function (e) {
-
-          if(c4.game.winner) {
-            return;
-          }
-
           var selectedColumn = selectedColumnMouse(e);
-          tryingToDropDisc( selectedColumn );
+          $(this).get(0).game.playerSelectsColumn( selectedColumn );
 
-          if(c4.game.fullBoard()){
-            showNewGame();
-            return;
-          }
+          lastBoardPlayed = $(this).get(0);
         });
 
         buttonRestart.on('click', function () {
-          console.log('HELLO1');
-          newGame();
+          lastBoardPlayed.game.reset();
         });
         buttonBack.on('click', function () {
-          console.log('HELLO');
-          removeLastDisc();
+          lastBoardPlayed.game.removeLastDisc();
         });
         buttonForth.on('click', function () {
-          console.log('Button Forth');
+          lastBoardPlayed.game.addNextDisc();
         });
         buttonBoardsize76.on('click', function () {
-          console.log('Button Forth333');
           changeBoardSize(7, 6);
         });
         buttonBoardsize88.on('click', function () {
@@ -434,8 +417,6 @@ c4.util = (function ($, window, document) {
 
   return {
     init: init,
-    togglePlayer: togglePlayer,
-    announceWinner: announceWinner,
   };
 
 }) (window.jQuery, window, document);
