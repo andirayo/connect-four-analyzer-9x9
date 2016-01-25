@@ -38,17 +38,6 @@ var C4Game = function( newBoardArea ) {
         return (1 + gameCells.map(function(e){return e.length;}).reduce(function(m,e){return m+e;}))  %  2  +  1;
       },
 
-      discDroppable = function (column) {
-        if (winner  ||  column === undefined  ||  ! Number.isInteger(column)) {
-          return false;
-        }
-        if (0 > column  ||  column >= c4.boardsizeWidth  ||  gameCells[column].length >= c4.boardsizeHeight) {
-          return false;
-        }
-
-        return true;
-      },
-
       checkWinner = function (column) {
         if(column === undefined){
           return false;
@@ -215,13 +204,16 @@ var C4Game = function( newBoardArea ) {
       },
 
       discDestination = function( selectedColumn ){
-        if (c4.boardsizeWidth <= selectedColumn) {
+        if (null == selectedColumn  ||  ! Number.isInteger(selectedColumn)) {
           return null;
         }
-        if (0 > selectedColumn) {
+        if (selectedColumn < 0  ||  c4.boardsizeWidth <= selectedColumn) {
           return null;
         }
-        if (! discDroppable(selectedColumn)) {
+        if (gameCells[selectedColumn].length >= c4.boardsizeHeight) {
+          return null;
+        }
+        if (winner) {
           return null;
         }
 
@@ -286,9 +278,12 @@ c4.util = (function ($, window, document) {
       // clean up everything
       resetBoardAreas = function() {
         boardAreas.each( function(index, boardArea) {
+          boardArea.game.reset();
+
           while (boardArea.firstChild) {
-            boardArea.firstChild.remove();
-            boardArea.removeChild(boardArea.firstChild);
+            board = boardArea.firstChild;
+            boardArea.removeChild( board );
+            board.remove();
           }
         })
       },
@@ -351,7 +346,6 @@ c4.util = (function ($, window, document) {
 
         if (getParams['moves']) {
           moveList = parseMoveList(decodeURIComponent(getParams['moves']));
-          console.log(moveList);
 
           boardAreas.each(function (index, boardArea) {
             moveList.forEach(function (column) {
