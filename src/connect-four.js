@@ -272,6 +272,7 @@ c4.util = (function ($, window, document) {
 
       boardAreas          = $('.boardArea'),
 
+      externalMoveList    = [],
       lastBoardPlayed,
 
 
@@ -316,6 +317,12 @@ c4.util = (function ($, window, document) {
         $('#headline_size').text( c4.boardsizeWidth + 'x' + c4.boardsizeHeight);
 
         initializeBoards();
+
+        boardAreas.each(function (index, boardArea) {
+          externalMoveList.forEach(function (column) {
+            boardArea.game.playerSelectsColumn(parseInt(column));
+          })
+        });
       },
 
       selectedColumnMouse = function(e) {
@@ -342,17 +349,11 @@ c4.util = (function ($, window, document) {
           boardArea.game  = new C4Game( boardArea );
         } );
 
-        changeBoardSize( CONFIG.BOARDSIZE_WIDTH, CONFIG.BOARDSIZE_HEIGHT );
-
         if (getParams['moves']) {
-          moveList = parseMoveList(decodeURIComponent(getParams['moves']));
-
-          boardAreas.each(function (index, boardArea) {
-            moveList.forEach(function (column) {
-              boardArea.game.playerSelectsColumn(parseInt(column));
-            })
-          });
+          externalMoveList = parseMoveList(decodeURIComponent(getParams['moves']));
         }
+
+        changeBoardSize( CONFIG.BOARDSIZE_WIDTH, CONFIG.BOARDSIZE_HEIGHT );
 
         $(document).keydown(function(e){
           if (! lastBoardPlayed) { return; }
