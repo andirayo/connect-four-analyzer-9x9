@@ -338,19 +338,38 @@ c4.util = (function ($, window, document) {
       },
 
       parseMoveList = function( moveListString ) {
+        console.log( '01: Move-List input: ' + moveListString );
+        var moveListStringB4 = moveListString
+
+
         // Removing JijBent, BSN, YTMT specific naming conventions
         moveListString  = moveListString.replace('Play', 'k9');
         moveListString  = moveListString.replace('Speel', 'k9');
         moveListString  = moveListString.replace('Zieh', 'k9');
 
+        // YTMT:
+        moveListString  = moveListString.replace(/Move\s+list\s*/, '');
+        moveListString  = moveListString.replace(/\(\s*<<\s+<\s+>\s+>>\s*\)\s*/, '');
+        if (moveListStringB4.length != moveListString.length) {
+          console.log('10: Removed JijBent specific naming: ' + moveListString);
+        }
+
+
         // Brettspielnetz  move list
         // Example:
         //  5. 	d4 	d5 	 6. 	e4 	c2 3. 	e2 	a1 	 4. 	d3 	e3  1. 	d1 	d2 	 2. 	c1 	e1
-        if (/^(?!1\.)\d+\.\s([a-k])[1-9]0?\s([a-k])[1-9]0?\s+/.test(moveListString)) {
+        //  5. Zieh 3. d5 e1 4. b1 g1 1. d1 d2 2. d3 d4
+        if (/^(?!1\.)\d+\.\s+([a-k])[1-9]0?\s+(?:([a-k])[1-9]0?\s+)?/.test(moveListString)) {
+          console.log( '20: Matched Brettspielnetz (BSN)!' );
+
           // parse cells
           moveListString = moveListString.replace(/(?:\d+\.)?\s?([a-k])[1-9]0?\s([a-k])[1-9]0?\s*/g, '$1$2');
+          console.log( '30: Parsed stones of move-list: ' + moveListString );
+
           // remove noise
           moveListString = moveListString.replace( /[^a-j]/g, '' );
+          console.log( '40: Removed noise: ' + moveListString );
+
           // sort (BSN has weird sorting)
           moveListSorted = '';
           while (4 < moveListString.length) {
@@ -358,6 +377,7 @@ c4.util = (function ($, window, document) {
             moveListString  = moveListString.substring( 0, moveListString.length-4 )
           }
           moveListSorted  += moveListString;
+          console.log( '50: Fixed BSN order: ' + moveListSorted );
 
           // identify column numbers
           return moveListSorted.split('').map(function(str) {return str.charCodeAt(0) - 96;});
@@ -367,10 +387,16 @@ c4.util = (function ($, window, document) {
         // Example:
         // 1. d1 d2 2. e1 f1 3. e2 e3 4. e4 c1 5. d3 d4 6. d5 f2 7. g1 c2 8. c3 g2 9. e5 d6 10. e6 e7
         if (/\d+\.\s([a-k])[1-9]0?\s([a-k])[1-9]0?\s+/.test(moveListString)) {
+          console.log( '20: Matched JijBent (Jij) or YourTurnMyTurn (YTMT)!' );
+
           // parse cells
           moveListString = moveListString.replace(/(?:\d+\.)?\s?([a-k])[1-9]0?\s([a-k])[1-9]0?\s*/g, '$1$2');
+          console.log( '30: Parsed stones of move-list: ' + moveListString );
+
           // remove noise
           moveListString = moveListString.replace( /[^a-j]/g, '' );
+          console.log( '40: Removed noise: ' + moveListString );
+
           // identify column numbers
           return moveListString.split('').map(function(str) {return str.charCodeAt(0) - 96;});
         }
@@ -379,14 +405,19 @@ c4.util = (function ($, window, document) {
         // Example:
         // 1.5 2.5 3.5 4.5 5.5 6.5 7.6 8.7 9.3
         if (/\d+\.(\d+)\s*/.test(moveListString)) {
+          console.log( '20: Matched LittleGolem (LG)!' );
+
           // parse columns
           moveListString = moveListString.replace(/\d+\.(\d+)\s*/g, '$1 ')
+          console.log( '30: Parsed stones of move-list: ' + moveListString );
+
           return moveListString.trim().split(' ').map(function(str) {return parseInt(str);});
         }
 
         // Manual input
         // Example:
         // 444445251333313
+        console.log( '20: Matched Manual Input!' );
         return moveListString.trim().split('').map(function(str) {return parseInt(str);});
       },
 
@@ -395,19 +426,45 @@ c4.util = (function ($, window, document) {
           boardArea.game  = new C4Game( boardArea );
         } );
 
-        if (getParams['moves']) {
-          externalMoveList = parseMoveList(decodeURIComponent(getParams['moves'].trim()));
 
-          if ( getParams['moves'] != externalMoveList.join('')
+        var param_moves = '';
+        if ( ! getParams['moves']
+          && 1 == Object.keys(getParams).length
+          && '' == getParams[Object.keys(getParams)[0]]
+          && 10 < Object.keys(getParams)[0].length
+           ) {
+          param_moves = Object.keys(getParams)[0];
+        } else {
+          param_moves = getParams['moves'];
+        }
+
+        if (param_moves  &&  1 < param_moves.length) {
+          externalMoveList = parseMoveList(decodeURIComponent(param_moves.trim()));
+          console.log( '80: Identified move-list: ' + externalMoveList );
+
+          if ( param_moves != externalMoveList.join('')
             && (! getParams['r']  ||  ! parseInt(getParams['r']))
              ) {
             newUrl  = window.location.href;
+            console.log( '90: Starting redirection from: ' + newUrl );
+
             // remove redirect parameter
             newUrl  = newUrl.replace( /([?&])r=.*?(&|$)/, '$1' );
-            // shorten move-list to readable length
-            newUrl  = newUrl.replace( getParams['moves'], externalMoveList.join('') );
-            // add redirect parameter
-            newUrl  = newUrl.replace( /([?&])moves=/, '$1r=1&moves=' );
+            console.log( '92: Removed redirect parameter: ' + newUrl );
+
+            // remove moves parameter
+            newUrl  = newUrl.replace( 'moves=', '' );
+            console.log( '94: Removed moves parameter: ' + newUrl );
+
+            // shorten move-list to readable length  AND  add redirect parameter
+            newUrl  = newUrl.replace( param_moves + '=', '&r=1&moves=' + externalMoveList.join('') );
+            newUrl  = newUrl.replace( param_moves, '&r=1&moves=' + externalMoveList.join('') );
+            console.log( '96: Replaced raw move-list: ' + newUrl );
+
+            // remove moves parameter
+            newUrl  = newUrl.replace( /\?&+/, '?' );
+            console.log( '98: Removed double dividors: ' + newUrl );
+
             // redirect the user
             console.log( 'Redirecting to ' + newUrl );
             window.location.href  = newUrl;
