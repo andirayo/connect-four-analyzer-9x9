@@ -170,6 +170,11 @@ var C4Game = function( newBoardArea ) {
 
         disc.setAttribute( "class", CONFIG.PLAYER_CLASSES[nextPlayer()] );
         disc.setAttribute( "data-column", selectedColumn );
+        $(disc).on("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function(e) {
+          $(this).css('z-index', 3);
+          $(this).off(e);
+        });
+
 
         /* called to allow CSS3 transitions for dynamically created dom element. */
         /*jshint -W030 */
