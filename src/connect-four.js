@@ -363,8 +363,10 @@ c4.util = (function ($, window, document) {
         moveListString  = moveListString.replace('Speel', 'k9');
         moveListString  = moveListString.replace('Zieh', 'k9');
 
-        // YTMT:
+        // YTMT, BSN:
+        // Example:  Zugliste    <<    <     >    >>
         moveListString  = moveListString.replace(/Move\s+list\s*/, '');
+        moveListString  = moveListString.replace('Zugliste', '');
         moveListString  = moveListString.replace(/\(\s*<<\s+<\s+>\s+>>\s*\)\s*/, '');
         if (moveListStringB4.length != moveListString.length) {
           console.log('20: Removed JijBent specific naming: ' + moveListString);
