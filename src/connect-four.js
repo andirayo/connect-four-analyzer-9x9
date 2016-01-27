@@ -349,28 +349,35 @@ c4.util = (function ($, window, document) {
         console.log( '01: Move-List input: ' + moveListString );
 
 
+        // Whitespaces (added since textarea input is possible):
         moveListStringB4 = moveListString;
         moveListString  = moveListString.replace(/\s+/g, ' ');
-        // Whitespaces (added since textarea input is possible):
         if (moveListStringB4.length != moveListString.length) {
           console.log('10: Consolidated white-spaces: ' + moveListString);
         }
 
 
+        // Removing JijBent, BSN, YTMT, LG specific naming conventions
         moveListStringB4 = moveListString
-        // Removing JijBent, BSN, YTMT specific naming conventions
-        moveListString  = moveListString.replace('Play', 'k9');
-        moveListString  = moveListString.replace('Speel', 'k9');
-        moveListString  = moveListString.replace('Zieh', 'k9');
-
-        // YTMT, BSN:
-        // Example:  Zugliste    <<    <     >    >>
-        moveListString  = moveListString.replace(/Move\s+list\s*/, '');
-        moveListString  = moveListString.replace('Zugliste', '');
-        moveListString  = moveListString.replace(/\(\s*<<\s+<\s+>\s+>>\s*\)\s*/, '');
+        moveListString  = moveListString.replace('Play', 'k0');
+        moveListString  = moveListString.replace('Speel', 'k0');
+        moveListString  = moveListString.replace('Zieh', 'k0');
+        moveListString  = moveListString.replace('resign', '0');
         if (moveListStringB4.length != moveListString.length) {
-          console.log('20: Removed JijBent specific naming: ' + moveListString);
+          console.log('20: Removed JijBent/LG specific naming: ' + moveListString);
         }
+
+        // LG, YTMT, BSN:
+        // Example (BSN):  Zugliste    <<    <     >    >>
+        // Example (LG):   Move List  TXT
+        moveListStringB4 = moveListString
+        moveListString  = moveListString.replace(/Move\s*list(\s+TXT)?\s*/i, '');
+        moveListString  = moveListString.replace('Zugliste', '');
+        moveListString  = moveListString.replace(/\(?\s*<<\s+<\s+>\s+>>\s*\)?\s*/, '');
+        if (moveListStringB4.length != moveListString.length) {
+          console.log('22: Removed move list header: ' + moveListString);
+        }
+
 
 
         // Brettspielnetz  move list
@@ -428,6 +435,10 @@ c4.util = (function ($, window, document) {
           // parse columns
           moveListString = moveListString.replace(/\d+\.(\d+)\s*/g, '$1 ')
           console.log( '40: Parsed stones of move-list: ' + moveListString );
+
+          // remove noise
+          moveListString = moveListString.replace( / [^1-9]\d*/g, '' );
+          console.log( '50: Removed noise: ' + moveListString );
 
           return moveListString.trim().split(' ').map(function(str) {return parseInt(str);});
         }
