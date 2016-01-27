@@ -2,24 +2,26 @@ html {
   font-family: sans-serif;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
+  background-color: #E2FFE1;
 }
 
-.boardArea{
+.boardArea {
   padding: 10px;
   float: left;
 }
 
-.board{
+.board {
   width: 420px;
   height: 360px;
-  background-color: #AAAAAA;
+  /*background-color: #AAAAAA;*/
+  background-color: #DDDDDD;
   margin-left: auto;
   margin-right: auto;
   position: relative;
   border: 3px solid grey;
 }
 
-.hidden{
+.hidden {
   display: none;
 }
 
@@ -27,7 +29,8 @@ html {
   width: 60px;
   height: 60px;
   background-size: 60px;
-  background-image: url('board_piece.png');
+  /*background-image: url('assets/pics/board-piece.png'); */
+  background-image: url('assets/pics/jijbent-board-piece.gif');
   position: absolute;
   z-index: 2;
 }
@@ -35,7 +38,8 @@ html {
   width: 60px;
   height: 60px;
   background-size: 60px;
-  background-image: url('disc-yellow.png');
+  /*background-image: url('assets/pics/disc-yellow.png');*/
+  background-image: url('assets/pics/jijbent-disc-yellow.gif');
   position: absolute;
   -moz-transition: all 200ms;
   -webkit-transition: all 200ms;
@@ -48,7 +52,8 @@ html {
   width: 60px;
   height: 60px;
   background-size: 60px;
-  background-image: url('disc-red.png');
+  /*background-image: url('assets/pics/disc-red.png');*/
+  background-image: url('assets/pics/jijbent-disc-red.gif');
   position: absolute;
   -moz-transition: all 200ms;
   -webkit-transition: all 200ms;
@@ -59,12 +64,13 @@ html {
 }
 
 
-#instruction{
+/* for text only */
+#instruction {
   text-align: center;
   margin-top: 20px;
 }
 
-.red{
+.red {
   color: red;
   font-weight: bold;
 }
