@@ -1,7 +1,7 @@
 var CONFIG = {
   BOARDSIZE_WIDTH:  9,
   BOARDSIZE_HEIGHT: 9,
-  CELL_SIZE:        30,
+  CELL_SIZE:        34,
 
   PLAYER_COLORS: {
     1: 'yellow',
