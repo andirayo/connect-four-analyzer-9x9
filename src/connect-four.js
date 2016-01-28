@@ -357,12 +357,14 @@ c4.util = (function ($, window, document) {
         }
 
 
-        // Removing JijBent, BSN, YTMT, LG specific naming conventions
+        // Removing JijBent, BSN, YTMT specific naming conventions
         moveListStringB4 = moveListString
         moveListString  = moveListString.replace('Play', 'k0');
         moveListString  = moveListString.replace('Speel', 'k0');
         moveListString  = moveListString.replace('Zieh', 'k0');
+        // Removing LG specific result conventions
         moveListString  = moveListString.replace('resign', '0');
+        moveListString  = moveListString.replace('draw', '0');
         if (moveListStringB4.length != moveListString.length) {
           console.log('20: Removed JijBent/LG specific naming: ' + moveListString);
         }
