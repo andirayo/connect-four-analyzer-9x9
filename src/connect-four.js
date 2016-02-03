@@ -1,7 +1,9 @@
 var CONFIG = {
-  BOARDSIZE_WIDTH:  9,
-  BOARDSIZE_HEIGHT: 9,
-  CELL_SIZE:        34,
+  NUMBER_OF_BOARDS:          8,
+
+  BOARDSIZE_WIDTH_DEFAULT:   9,
+  BOARDSIZE_HEIGHT_DEFAULT:  9,
+  CELL_SIZE_PIXELS_DEFAULT: 34,
 
   PLAYER_COLORS: {
     1: 'yellow',
@@ -13,7 +15,7 @@ var CONFIG = {
   },
 };
 
-var c4 = { boardsizeWidth: CONFIG.BOARDSIZE_WIDTH, boardsizeHeight: CONFIG.BOARDSIZE_HEIGHT };
+var c4 = { boardsizeWidth: CONFIG.BOARDSIZE_WIDTH_DEFAULT, boardsizeHeight: CONFIG.BOARDSIZE_HEIGHT_DEFAULT };
 
 var C4Game = function( newBoardArea ) {
   var boardArea, gameCells, winner,
@@ -61,8 +63,8 @@ var C4Game = function( newBoardArea ) {
 
         /* check horizontal */
         var row = gameCells[column].length - 1,
-            horizontal, diagnalRight, diagnalLeft;
-        horizontal = diagnalRight = diagnalLeft = 1;
+            horizontal, diagonalRight, diagonalLeft;
+        horizontal = diagonalRight = diagonalLeft = 1;
 
         for (i = column - 1; i >= 0; i--) {
 
@@ -91,15 +93,15 @@ var C4Game = function( newBoardArea ) {
           }
         }
 
-        /* check diagnal right */
+        /* check diagonal right */
         for (i = column + 1, j = numberDiscs; i < c4.boardsizeWidth && j < c4.boardsizeHeight; i++) {
           if(gameCells[i][j] !== color){
             break;
           }
           if(gameCells[i][j] === color){
-            diagnalRight ++;
+            diagonalRight ++;
           }
-          if(diagnalRight >= 4){
+          if(diagonalRight >= 4){
             winner = true;
             return true;
           }
@@ -111,24 +113,24 @@ var C4Game = function( newBoardArea ) {
             break;
           }
           if(gameCells[i][j] === color){
-            diagnalRight ++;
+            diagonalRight ++;
           }
-          if(diagnalRight >= 4){
+          if(diagonalRight >= 4){
             winner = true;
             return true;
           }
           j--;
         }
 
-        /* check diagnal left */
+        /* check diagonal left */
         for (i = column - 1, j = numberDiscs; i >= 0 && j < c4.boardsizeHeight; i--) {
           if(gameCells[i][j] !== color){
             break;
           }
           if(gameCells[i][j] === color){
-            diagnalLeft ++;
+            diagonalLeft ++;
           }
-          if(diagnalLeft >= 4){
+          if(diagonalLeft >= 4){
             winner = true;
             return true;
           }
@@ -140,9 +142,9 @@ var C4Game = function( newBoardArea ) {
             break;
           }
           if(gameCells[i][j] === color){
-            diagnalLeft ++;
+            diagonalLeft ++;
           }
-          if(diagnalLeft >= 4){
+          if(diagonalLeft >= 4){
             winner = true;
             return true;
           }
@@ -164,8 +166,8 @@ var C4Game = function( newBoardArea ) {
         var disc = document.createElement("div");
         listOfDiscs.push( [disc, selectedColumn] );
 
-        var bottomLocation = (10 + CONFIG.CELL_SIZE * c4.boardsizeHeight);
-        $(disc).css({left: left, bottom: bottomLocation, width: CONFIG.CELL_SIZE, height: CONFIG.CELL_SIZE, 'background-size': CONFIG.CELL_SIZE});
+        var bottomLocation = (10 + CONFIG.CELL_SIZE_PIXELS_DEFAULT * c4.boardsizeHeight);
+        $(disc).css({left: left, bottom: bottomLocation, width: CONFIG.CELL_SIZE_PIXELS_DEFAULT, height: CONFIG.CELL_SIZE_PIXELS_DEFAULT, 'background-size': CONFIG.CELL_SIZE_PIXELS_DEFAULT});
         board().appendChild( disc );
 
         disc.setAttribute( "class", CONFIG.PLAYER_CLASSES[nextPlayer()] );
@@ -224,8 +226,8 @@ var C4Game = function( newBoardArea ) {
 
         return {
           selectedColumn: selectedColumn,
-          left: selectedColumn * CONFIG.CELL_SIZE,
-          bottom: gameCells[selectedColumn].length * CONFIG.CELL_SIZE
+          left: selectedColumn * CONFIG.CELL_SIZE_PIXELS_DEFAULT,
+          bottom: gameCells[selectedColumn].length * CONFIG.CELL_SIZE_PIXELS_DEFAULT
         };
       },
 
@@ -268,10 +270,7 @@ var C4Game = function( newBoardArea ) {
 
 
 c4.util = (function ($, window, document) {
-  var buttonRestart       = $('#buttonRestart'),
-      buttonBack          = $('#buttonBack'),
-      buttonForth         = $('#buttonForth'),
-      buttonBoardsize76   = $('#buttonBoardsize76'),
+  var buttonBoardsize76   = $('#buttonBoardsize76'),
       buttonBoardsize88   = $('#buttonBoardsize88'),
       buttonBoardsize99   = $('#buttonBoardsize99'),
       buttonBoardsizeAA   = $('#buttonBoardsizeAA'),
@@ -302,15 +301,15 @@ c4.util = (function ($, window, document) {
         resetBoardAreas();
 
         var board = $('<div>', {class: "board"});
-        board.css({width: CONFIG.CELL_SIZE * c4.boardsizeWidth, height: CONFIG.CELL_SIZE * c4.boardsizeHeight});
+        board.css({width: CONFIG.CELL_SIZE_PIXELS_DEFAULT * c4.boardsizeWidth, height: CONFIG.CELL_SIZE_PIXELS_DEFAULT * c4.boardsizeHeight});
 
         var discs = [];
         for (var i = 0; i < c4.boardsizeWidth; i++) {
           for (var j = 0; j < c4.boardsizeHeight; j++) {
             var disc = $('<div>', {class: "boardPiece", "data-column": i});
-            var left = i * CONFIG.CELL_SIZE;
-            var bottom = j * CONFIG.CELL_SIZE;
-            $(disc).css({left: left, bottom: bottom, width: CONFIG.CELL_SIZE, height: CONFIG.CELL_SIZE, 'background-size': CONFIG.CELL_SIZE});
+            var left = i * CONFIG.CELL_SIZE_PIXELS_DEFAULT;
+            var bottom = j * CONFIG.CELL_SIZE_PIXELS_DEFAULT;
+            $(disc).css({left: left, bottom: bottom, width: CONFIG.CELL_SIZE_PIXELS_DEFAULT, height: CONFIG.CELL_SIZE_PIXELS_DEFAULT, 'background-size': CONFIG.CELL_SIZE_PIXELS_DEFAULT});
             discs.push(disc);
           }
         }
@@ -322,7 +321,7 @@ c4.util = (function ($, window, document) {
       changeBoardSize = function( boardsize_width, boardsize_height ) {
         c4.boardsizeWidth = boardsize_width;
         c4.boardsizeHeight = boardsize_height;
-        $('#headline_size').text( c4.boardsizeWidth + 'x' + c4.boardsizeHeight);
+        $('#headline_boardsize').text( c4.boardsizeWidth + 'x' + c4.boardsizeHeight);
 
         initializeBoards();
 
@@ -336,7 +335,7 @@ c4.util = (function ($, window, document) {
       selectedColumnMouse = function(e) {
         var selectedColumn;
         if (e.target === this) {
-          selectedColumn = Math.floor(e.offsetX / CONFIG.CELL_SIZE);
+          selectedColumn = Math.floor(e.offsetX / CONFIG.CELL_SIZE_PIXELS_DEFAULT);
         }
         else {
           selectedColumn = $(e.target).data('column');
@@ -364,6 +363,7 @@ c4.util = (function ($, window, document) {
         moveListString  = moveListString.replace('Zieh', 'k0');
         // Removing LG specific result conventions
         moveListString  = moveListString.replace('resign', '0');
+        moveListString  = moveListString.replace('aufg.', '0');
         moveListString  = moveListString.replace('draw', '0');
         if (moveListStringB4.length != moveListString.length) {
           console.log('20: Removed JijBent/LG specific naming: ' + moveListString);
@@ -464,21 +464,25 @@ c4.util = (function ($, window, document) {
           newUrl  = window.location.href;
           console.log( '90: Starting redirection from: ' + newUrl );
 
-          // remove redirect parameter
-          newUrl  = newUrl.replace( /([?&])r=.*?(&|$)/, '$1' );
-          console.log( '91: Removed redirect parameter: ' + newUrl );
+          // remove redirect/reload parameter
+          newUrl  = newUrl.replace( /([?&])r=[^&]*/, '$1' );
+          console.log( '91: Removed redirect/reload parameter "r": ' + newUrl );
 
           // remove moves parameter
-          newUrl  = newUrl.replace( /moves=[^&]*/, '' );
-          console.log( '93: Removed moves parameter: ' + newUrl );
+          newUrl  = newUrl.replace( /([?&])moves=[^&]*/, '$1' );
+          console.log( '92: Removed moves parameter: ' + newUrl );
 
-          // removing old move-list
+          // remove size parameter
+          newUrl  = newUrl.replace( /([?&])size=[^&]*/, '$1' );
+          console.log( '93: Removed size parameter: ' + newUrl );
+
+          // removing old move-list (this should be covered by removing the moves-parameter, but because we allow erroneous input, this is done to make sure
           newUrl  = newUrl.replace( paramMoves + '=', '' );
           newUrl  = newUrl.replace( paramMoves, '' );
           console.log( '95: Removed old (raw) move-list: ' + newUrl );
 
           // adding new short move-list  AND  add redirect parameter
-          newUrl  = newUrl.replace( /\?|$/, '?r=1&moves=' + externalMoveList.join('') + '&' );
+          newUrl  = newUrl.replace( /\?|$/, '?r=1&size=' + c4.boardsizeWidth + 'x' + c4.boardsizeHeight + '&moves=' + externalMoveList.join('') + '&' );
           console.log( '97: Added new (parsed) move-list: ' + newUrl );
 
           // remove moves parameter
@@ -492,7 +496,7 @@ c4.util = (function ($, window, document) {
         }
       },
 
-      init = function( getParameters ) {
+      dealWithGetParameters = function( getParameters ) {
         getParams = getParameters;
         boardAreas.each( function(index, boardArea) {
           boardArea.game  = new C4Game( boardArea );
@@ -501,10 +505,10 @@ c4.util = (function ($, window, document) {
 
         var paramMoves = '';
         if ( ! getParams['moves']
-          && 1 == Object.keys(getParams).length
-          && (! getParams[Object.keys(getParams)[0]] || '' == getParams[Object.keys(getParams)[0]])
-          && 10 < Object.keys(getParams)[0].length
-           ) {
+            && 1 == Object.keys(getParams).length
+            && (! getParams[Object.keys(getParams)[0]] || '' == getParams[Object.keys(getParams)[0]])
+            && 10 < Object.keys(getParams)[0].length
+        ) {
           paramMoves = Object.keys(getParams)[0];
         } else {
           paramMoves = getParams['moves'];
@@ -515,8 +519,29 @@ c4.util = (function ($, window, document) {
         }
 
 
-        changeBoardSize( CONFIG.BOARDSIZE_WIDTH, CONFIG.BOARDSIZE_HEIGHT );
+        // allowing to set board-size via Get-parameter
+        if (getParams['size']) {
+          var boardSize = getParams['size'].split('x').map(function(str) {return parseInt(str);});
 
+          if (2 == boardSize.length) {
+            c4.boardsizeWidth   = boardSize[0];
+            c4.boardsizeHeight  = boardSize[1];
+          }
+        }
+      },
+
+      init = function( getParameters ) {
+        for (var i = 1; Math.pow(2,i) <= CONFIG.NUMBER_OF_BOARDS; i++) {
+          $( ".gameAnalyzer").clone().appendTo( ".gameAnalyzers" );
+        }
+        boardAreas          = $('.boardArea');
+
+        dealWithGetParameters( getParameters );
+
+        changeBoardSize( c4.boardsizeWidth, c4.boardsizeHeight );
+
+
+        // ==================================================================
         $(document).keydown(function(e){
           if (! lastBoardPlayed) { return; }
 
@@ -548,6 +573,8 @@ c4.util = (function ($, window, document) {
           }
         });
 
+
+        // ==================================================================
         boardAreas.on('click', function (e) {
           var selectedColumn = selectedColumnMouse(e);
           $(this).get(0).game.playerSelectsColumn( selectedColumn );
@@ -555,15 +582,6 @@ c4.util = (function ($, window, document) {
           lastBoardPlayed = $(this).get(0);
         });
 
-        buttonRestart.on('click', function () {
-          lastBoardPlayed.game.reset();
-        });
-        buttonBack.on('click', function () {
-          lastBoardPlayed.game.removeLastDisc();
-        });
-        buttonForth.on('click', function () {
-          lastBoardPlayed.game.addNextDisc();
-        });
         buttonBoardsize76.on('click', function () {
           changeBoardSize(7, 6);
         });
@@ -578,6 +596,21 @@ c4.util = (function ($, window, document) {
         });
         buttonSendMovelist.on('click', function () {
           parse_movelist_and_redirect( $('#textMovelist').val(), true );
+        });
+
+        $( ".gameAnalyzer").each(function (index, gameAnalyzer) {
+          $(gameAnalyzer).find('.buttonRestart').on('click', function () {
+            lastBoardPlayed = $(gameAnalyzer).find('.boardArea').get(0);
+            lastBoardPlayed.game.reset();
+          });
+          $(gameAnalyzer).find('.buttonBack').on('click', function () {
+            lastBoardPlayed = $(gameAnalyzer).find('.boardArea').get(0);
+            lastBoardPlayed.game.removeLastDisc();
+          });
+          $(gameAnalyzer).find('.buttonForth').on('click', function () {
+            lastBoardPlayed = $(gameAnalyzer).find('.boardArea').get(0);
+            lastBoardPlayed.game.addNextDisc();
+          });
         });
       };
 
