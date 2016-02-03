@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="connect-four.css" />
   </head>
   <body>
-    <h1>Rayo's Connect Four Analyzer <span id="headline_size">XxX</span></h1>
+    <h1>Rayo's Connect Four Analyzer <span id="headline_boardsize">XxX</span></h1>
     <div>
       Thanks, David, for your JS base! :)
       <button id="buttonBoardsize76">7x6</button>
@@ -17,29 +17,26 @@
     </div>
 
     <div id="analyzer">
-      <div class="boardAreas">
-        <div class="boardArea"></div>
-        <div class="boardArea"></div>
-        <div class="boardArea"></div>
-        <div class="boardArea"></div>
-        <div class="boardArea"></div>
-        <div class="boardArea"></div>
-        <div class="boardArea"></div>
-        <div class="boardArea"></div>
-        <br style="clear:left;" />
+      <div class="gameAnalyzers">
+        <div class="gameAnalyzer">
+          <div class="boardArea"></div>
+          <div class="analyzerButtons">
+            <button class="buttonRestart">Restart</button>
+            <button class="buttonBack">&lt;&lt; Back</button>
+            <button class="buttonForth">Forth &gt;&gt;</button>
+          </div>
+        </div>
       </div>
+      <br style="clear:left;" />
+      <!--
       <div id="instruction">
         <span id="player1"><span class="yellow">Player one</span>, select column.</span>
         <span id="player2" class="hidden"><span class="red">Player two</span>, select column.</span>
         <span id="winner" class="hidden"><span id="winnerName"></span>...congratulations you won connect four.</span>
-        <div>
-          <button id="buttonRestart">Restart</button>
-          <button id="buttonBack">&lt;&lt; Back</button>
-          <button id="buttonForth">Forth &gt;&gt;</button>
-        </div>
       </div>
+      -->
     </div>
-    <div>
+    <div style="padding-top:30px;">
       <span style="vertical-align: top;">(Copy&amp;)Paste Move-list here:</span>
       <textarea id="textMovelist" style="width:200px;height:100px;"></textarea>
       <button id="buttonSendMovelist">Send</button>
