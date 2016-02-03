@@ -5,9 +5,14 @@ html {
   background-color: #E2FFE1;
 }
 
+.gameAnalyzer {
+  float: left;
+}
 .boardArea {
   padding: 10px;
-  float: left;
+}
+.analyzerButtons {
+  text-align: center;
 }
 
 .board {
