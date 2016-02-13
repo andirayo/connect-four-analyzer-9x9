@@ -358,13 +358,13 @@ c4.util = (function ($, window, document) {
 
         // Removing JijBent, BSN, YTMT specific naming conventions
         moveListStringB4 = moveListString
-        moveListString  = moveListString.replace('Play', 'k0');
+        moveListString  = moveListString.replace('Play',  'k0');
         moveListString  = moveListString.replace('Speel', 'k0');
-        moveListString  = moveListString.replace('Zieh', 'k0');
+        moveListString  = moveListString.replace('Zieh',  'k0');
         // Removing LG specific result conventions
         moveListString  = moveListString.replace('resign', '0');
-        moveListString  = moveListString.replace('aufg.', '0');
-        moveListString  = moveListString.replace('draw', '0');
+        moveListString  = moveListString.replace('aufg.',  '0');
+        moveListString  = moveListString.replace('draw',   '0');
         if (moveListStringB4.length != moveListString.length) {
           console.log('20: Removed JijBent/LG specific naming: ' + moveListString);
         }
@@ -386,11 +386,11 @@ c4.util = (function ($, window, document) {
         // Example:
         //  5. 	d4 	d5 	 6. 	e4 	c2 3. 	e2 	a1 	 4. 	d3 	e3  1. 	d1 	d2 	 2. 	c1 	e1
         //  5. Zieh 3. d5 e1 4. b1 g1 1. d1 d2 2. d3 d4
-        if (/^(?!1\.)\d+\.\s+([a-k])[1-9]0?\s+(?:([a-k])[1-9]0?\s+)?/.test(moveListString)) {
+        if (/^(?!1\.)\d+\.\s+([a-k])1?[0-9](\s+?:([a-k])1?[0-9])?\s+/.test(moveListString)) {
           console.log( '30: Matched Brettspielnetz (BSN)!' );
 
           // parse cells
-          moveListString = moveListString.replace(/(?:\d+\.)?\s?([a-k])[1-9]0?\s([a-k])[1-9]0?\s*/g, '$1$2');
+          moveListString = moveListString.replace(/(?:\d+\.)?\s?([a-k])1?[0-9](?:\s+([a-k])1?[0-9])?\s*/g, '$1$2');
           console.log( '40: Parsed stones of move-list: ' + moveListString );
 
           // remove noise
@@ -413,11 +413,11 @@ c4.util = (function ($, window, document) {
         // YourTurnMyTurn / JijBent move list
         // Example:
         // 1. d1 d2 2. e1 f1 3. e2 e3 4. e4 c1 5. d3 d4 6. d5 f2 7. g1 c2 8. c3 g2 9. e5 d6 10. e6 e7
-        if (/\d+\.\s([a-k])[1-9]0?\s([a-k])[1-9]0?\s+/.test(moveListString)) {
+        if (/\d+\.\s([a-k])1?[0-9]\s([a-k])1?[0-9]\s+/.test(moveListString)) {
           console.log( '30: Matched JijBent (Jij) or YourTurnMyTurn (YTMT)!' );
 
           // parse cells
-          moveListString = moveListString.replace(/(?:\d+\.)?\s?([a-k])[1-9]0?\s([a-k])[1-9]0?\s*/g, '$1$2');
+          moveListString = moveListString.replace(/(?:\d+\.)?\s?([a-k])1?[1-9](?:\s+([a-k])1?[0-9])?\s*/g, '$1$2');
           console.log( '40: Parsed stones of move-list: ' + moveListString );
 
           // remove noise
