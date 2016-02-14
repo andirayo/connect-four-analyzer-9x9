@@ -445,6 +445,24 @@ c4.util = (function ($, window, document) {
           return moveListString.trim().split(' ').map(function(str) {return parseInt(str);});
         }
 
+        // Manual input in form of letter+number (column+row) list:
+        // Example:
+        // g1, e1, e2, e3, e4, g2, e5, d1, e6, e7, c1, d2, d3, c2, c3
+        if (/(([a-k])1?[0-9],\s*){5,}/.test(moveListString)) {
+          console.log( '30: Matched Manual input: letter+number list!' );
+
+          // parse columns
+          moveListString = (moveListString + ',').replace(/([a-k])1?[0-9],\s*/g, '$1')
+          console.log( '40: Parsed stones of move-list: ' + moveListString );
+
+          // remove noise
+          moveListString = moveListString.replace( /[^a-j]/g, '' );
+          console.log( '50: Removed noise: ' + moveListString );
+
+          // identify column numbers
+          return moveListString.split('').map(function(str) {return str.charCodeAt(0) - 96;});
+        }
+
         // Manual input
         // Example:
         // 444445251333313
